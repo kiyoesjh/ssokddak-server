@@ -1,0 +1,35 @@
+{
+  "name": "ssok-ddak-server",
+  "version": "1.0.0",
+  "description": "기억하고 싶은 글 또는 적어두고 싶은 짧은 이야기들을 저장하고 공유하는 앱",
+  "main": "app.js",
+  "scripts": {
+    "dev": "nodemon app"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kiyoesjh/ssokddak-server.git"
+  },
+  "author": "kiyoesjh",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kiyoesjh/ssokddak-server/issues"
+  },
+  "homepage": "https://github.com/kiyoesjh/ssokddak-server#readme",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "mysql2": "^2.2.5",
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0",
+    "sequelize": "^6.6.2",
+    "sequelize-cli": "^6.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}
