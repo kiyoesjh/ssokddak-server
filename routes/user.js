@@ -1,11 +1,49 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
-const { User, Post } = require('../models');
 const passport = require('passport');
 
+const { User, Post } = require('../models');
+const { isLoggedIn, isNotLoggedIn } = require('./middlewares');
 const router = express.Router();
 
-router.post('/login', (req, res, next) => {
+router.get('/', async (req, res, next) => {
+  try {
+    if (req.user) {
+      console.log('hihi');
+      console.log('req: ', req);
+      const fullUser = await User.findOne({
+        where: { id: req.user.id },
+        attributes: {
+          exclude: ['password'],
+        },
+        include: [
+          {
+            model: Post,
+            attributes: ['id'],
+          },
+          {
+            model: User,
+            as: 'Followers',
+            attributes: ['id'],
+          },
+          {
+            model: User,
+            as: 'Followings',
+            attributes: ['id'],
+          },
+        ],
+      });
+      return res.status(200).json(fullUser);
+    } else {
+      return res.status(200).json(null);
+    }
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+router.post('/login', isNotLoggedIn, (req, res, next) => {
   passport.authenticate('local', (error, user, info) => {
     //서버에러, 성공, 클라이언트에러
     if (error) {
@@ -28,14 +66,17 @@ router.post('/login', (req, res, next) => {
         include: [
           {
             model: Post,
+            attributes: ['id'],
           },
           {
             model: User,
             as: 'Followers',
+            attributes: ['id'],
           },
           {
             model: User,
             as: 'Followings',
+            attributes: ['id'],
           },
         ],
       });
@@ -44,7 +85,13 @@ router.post('/login', (req, res, next) => {
   })(req, res, next);
 });
 
-router.post('/', async (req, res, next) => {
+router.post('/logout', isLoggedIn, (req, res) => {
+  req.logout();
+  req.session.destroy();
+  res.send('ok');
+});
+
+router.post('/', isNotLoggedIn, async (req, res, next) => {
   // signup
   try {
     const exUser = await User.findOne({
