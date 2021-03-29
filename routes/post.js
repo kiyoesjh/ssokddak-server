@@ -17,10 +17,49 @@ router.post('/', isLoggedIn, async (req, res, next) => {
         },
         {
           model: User,
+          attributes: ['id', 'nickname'],
+        },
+        {
+          model: User,
+          as: 'Likers',
+          attributes: ['id'],
         },
       ],
     });
     res.status(201).json(fullPost);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+router.patch('/:postId/like', async (req, res, next) => {
+  try {
+    const post = await Post.findOne({
+      where: { id: req.params.postId },
+    });
+    if (!post) {
+      return res.status(403).send('게시글이 존재하지 않습니다.');
+    }
+    await post.addLikers(req.user.id);
+    res.json({ PostId: post.id, UserId: req.user.id });
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+router.delete('/:postId/like', async (req, res, next) => {
+  // DELETE /post/1/like
+  try {
+    const post = await Post.findOne({
+      where: { id: req.params.postId },
+    });
+    await post.removeLikers(req.user.id);
+    res.json({ PostId: post.id, UserId: req.user.id });
+    if (!post) {
+      return res.status(403).send('게시글이 존재하지 않습니다.');
+    }
   } catch (error) {
     console.error(error);
     next(error);
