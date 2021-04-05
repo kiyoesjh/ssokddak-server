@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
+const path = require('path');
 
 const postRouter = require('./routes/post');
 const postsRouter = require('./routes/posts');
@@ -26,10 +27,11 @@ passportConfig();
 app.use(morgan('dev'));
 app.use(
   cors({
-    origin: true, // http://localhost:3000
+    origin: true, // or http://localhost:3000
     credentials: true, //cookie를 전달해주려면 true 로 변경해야함.
   })
 );
+app.use('/', express.static(path.join(__dirname, 'uploads')));
 app.use(express.json()); // front에서 json 형식으로 왔을때 req.body 안으로 넣어줄 수 있도록 처리
 app.use(express.urlencoded({ extended: true })); //form submit 했을 때 urlencoded 방식으로 넘어오게 됨
 app.use(cookieParser(process.env.COOKIE_SECRET));

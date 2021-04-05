@@ -9,8 +9,6 @@ const router = express.Router();
 router.get('/', async (req, res, next) => {
   try {
     if (req.user) {
-      console.log('hihi');
-      console.log('req: ', req);
       const fullUser = await User.findOne({
         where: { id: req.user.id },
         attributes: {
