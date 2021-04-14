@@ -30,6 +30,39 @@ const upload = multer({
   limits: { fileSize: 20 * 1024 * 1024 }, //20MB
 });
 
+router.get('/:postId', async (req, res, next) => {
+  //하나의 게시글 불러오기
+  try {
+    const post = await Post.findOne({
+      where: { id: req.params.postId },
+    });
+    if (!post) {
+      return res.status(403).send('게시글이 존재하지 않습니다.');
+    }
+    const resultPost = await Post.findOne({
+      where: { id: post.id },
+      include: [
+        {
+          model: Image,
+        },
+        {
+          model: User,
+          attributes: ['id', 'nickname'],
+        },
+        {
+          model: User,
+          as: 'Likers',
+          attributes: ['id'],
+        },
+      ],
+    });
+    res.status(200).json(resultPost);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
 router.post('/', isLoggedIn, upload.none(), async (req, res, next) => {
   try {
     const post = await Post.create({
