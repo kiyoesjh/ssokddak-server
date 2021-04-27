@@ -1,6 +1,10 @@
 const Sequelize = require('sequelize');
 const env = process.env.NODE_ENV || 'development';
 const config = require('../config/config')[env];
+const user = require('./user');
+const post = require('./post');
+const image = require('./image');
+
 const db = {};
 
 const sequelize = new Sequelize(
@@ -10,9 +14,13 @@ const sequelize = new Sequelize(
   config
 );
 
-db.User = require('./user')(sequelize, Sequelize);
-db.Post = require('./post')(sequelize, Sequelize);
-db.Image = require('./image')(sequelize, Sequelize);
+db.User = user;
+db.Post = post;
+db.Image = image;
+
+Object.keys(db).forEach((modelName) => {
+  db[modelName].init(sequelize);
+});
 
 Object.keys(db).forEach((modelName) => {
   if (db[modelName].associate) {
